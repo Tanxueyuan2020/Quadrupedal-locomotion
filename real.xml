@@ -1,0 +1,134 @@
+<mujoco model="real">
+
+    <compiler angle="degree" coordinate="local" inertiafromgeom="true"/>
+    <option integrator="RK4" timestep="0.02"/>
+
+
+    <default>
+        <joint armature="1" damping="1" limited="true"/>
+        <geom conaffinity="0" condim="1" density="0.01" friction="0.5 0.5 0.1" margin="0.01" rgba="1 1 0 1"/>
+    </default>
+
+
+    <asset>
+<!-- Sky -->
+        <texture builtin="gradient" height="100" rgb1="0.4 0.7 1" rgb2="0 0 0" type="skybox" width="100"/>
+
+<!-- Floor -->
+        <texture builtin="flat" height="1278" mark="cross" markrgb="1 0 1" name="texgeom" random="0.01" rgb1="0.8 0.6 0.9" rgb2="0.8 0.6 0.4" type="cube" width="127"/>
+        <texture builtin="checker" height="100" name="texplane" rgb1="0 0 0" rgb2="0.8 0.8 0.8" type="2d" width="100"/>
+        <material name="MatPlane" reflectance="0.1" shininess="1" specular="1" texrepeat="60 60" texture="texplane" />
+        <material name="geom" texture="texgeom" texuniform="true"/>
+
+<!-- STL models -->
+        <mesh name="torso" file="stl/cattorso.stl" scale="0.01 0.01 0.01"/>
+        <mesh name="hip" file="stl/hip.stl" scale="0.01 0.01 0.01"/>
+        <mesh name="knee" file="stl/knee.stl" scale="0.01 0.01 0.01"/>
+        <mesh name="foot" file="stl/foot.stl" scale="0.01 0.01 0.01"/>
+        <hfield name="hill" file="hillk2.png" size="20 8 0.05 0.1"/>
+
+    </asset>
+
+    <worldbody>
+<!-- ///////////////////////////////////////Environment ////////////////////////////////////////////-->
+        <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1.3" directional="true" exponent="1" pos="0 0 1.3" specular=".1 .1 .1"/>
+        <geom conaffinity="1" condim="3" material="MatPlane" name="floor" pos="0 0 0" rgba="0.2 0.3 0.3 1" size="10 10 10" type="hfield" hfield="hill"/>
+
+        <geom name = "target" pos="5 0.4 2 " size="0.1" type="sphere" rgba="1 0 0 1" />
+
+
+<!-- /////////////////////////////////////////Robot //////////////////////////////////////////////-->
+<!--Torso-->
+        <camera name="birds_eye" pos="0 0 25" euler="0 0 0" mode="fixed"/>
+        <camera name="isometric_view" pos="-10 -10 13" euler="30 -35 -40" mode="fixed"/>
+        <body name="torso" pos="-15 0 1.4" euler="0 0 0">
+            <site name="torso_sensor_zone" pos="0 0 0.5" size=".1 .1 .1" type="ellipsoid" rgba="1 1 1 1"/>
+            <camera name="eye" pos="0.5 0 1" euler="90 -90 0" mode="fixed"/>
+            <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free"  />
+            <geom pos="0 0 0" type="mesh" mesh="torso" rgba="0 1 0 0.97"/>
+
+
+<!-- FRONT RIGHT -->
+            <body name = "hipFR" pos="0.72 0.4 0.15">
+                    <joint axis="1 0 0" name="dynamixel_1" pos="0 0 0" range="0 30" type="hinge"/>
+                    <geom pos="0 0 0" type="mesh" mesh="hip" rgba="1 0 0 0.9"/>
+
+                    <body name = "kneeFR" pos="0.45 0 0">-->
+                        <joint axis="0 1 0" name="dynamixel_2" pos="0 0 0" range="-90 0" type="hinge"/>
+                        <geom pos="0 0 0" type="mesh" mesh="knee" rgba="0 0 1 0.9"/>
+                        <body name = "footFR" pos="0 0 -0.92">-->
+	                        <joint axis="0 1 0" name="dynamixel_3" pos="0 0 0" range="-90 0" type="hinge"/>
+	                        <geom pos="0 0 0" type="capsule" fromto="0 0 0 0 0 -0.5" size="0.1" rgba="0 1 0 0.9"/>
+                    	</body>
+                    </body>
+            </body>
+
+    <!-- FRONT LEFT -->
+            <body name = "hipFL" pos="0.72 -0.4 0.15">
+                    <joint axis="1 0 0" name="dynamixel_4" pos="0 0 0" range="-30 0" type="hinge"/>
+                    <geom pos="0 0 0" type="mesh" mesh="hip" rgba="1 0 0 0.9"/>
+
+                    <body name = "kneeFL" pos="0.45 0 0">-->
+                        <joint axis="0 1 0" name="dynamixel_5" pos="0 0 0" range="-90 0" type="hinge"/>
+                        <geom pos="0 0 0" type="mesh" mesh="knee" rgba="0 0 1 0.9"/>
+                        <body name = "footFL" pos="0 0 -0.92">-->
+	                        <joint axis="0 1 0" name="dynamixel_6" pos="0 0 0" range="-90 0" type="hinge"/>
+	                        <geom pos="0 0 0" type="capsule" fromto="0 0 0 0 0 -0.5" size="0.1" rgba="0 1 0 0.9"/>
+                    	</body>
+                    </body>
+            </body>
+
+    <!-- BACK RIGHT -->
+            <body name = "hipBR" pos="-0.8 0.4 0.15" euler="0 0 -180">
+                    <joint axis="1 0 0" name="dynamixel_7" pos="0 0 0" range="-30 0" type="hinge"/>
+                    <geom pos="0 0 0" type="mesh" mesh="hip" rgba="1 0 0 0.9"/>
+
+                    <body name = "kneeBR" pos="0.45 0 0">-->
+                        <joint axis="0 1 0" name="dynamixel_8" pos="0 0 0" range="-90 0" type="hinge"/>
+                        <geom pos="0 0 0" type="mesh" mesh="knee" rgba="0 0 1 0.9"/>
+                        <body name = "footBR" pos="0 0 -0.92">-->
+	                        <joint axis="0 1 0" name="dynamixel_9" pos="0 0 0" range="0 90" type="hinge"/>
+	                        <geom pos="0 0 0" type="capsule" fromto="0 0 0 0 0 -0.5" size="0.1" rgba="0 1 0 0.9"/>
+                    	</body>
+                    </body>
+            </body>
+
+    <!-- BACK LEFT -->
+            <body name = "hipBL" pos="-0.8 -0.4 0.15" euler="0 0 -180">>
+                    <joint axis="1 0 0" name="dynamixel_10" pos="0 0 0" range="0 30" type="hinge"/>
+                    <geom pos="0 0 0" type="mesh" mesh="hip" rgba="1 0 0 0.9"/>
+
+                    <body name = "kneeBL" pos="0.45 0 0">-->
+                        <joint axis="0 1 0" name="dynamixel_11" pos="0 0 0" range="-90 0" type="hinge"/>
+                        <geom pos="0 0 0" type="mesh" mesh="knee" rgba="0 0 1 0.9"/>
+                        <body name = "footBL" pos="0 0 -0.92">-->
+	                        <joint axis="0 1 0" name="dynamixel_12" pos="0 0 0" range="0 90" type="hinge"/>
+	                        <geom pos="0 0 0" type="capsule" fromto="0 0 0 0 0 -0.5" size="0.1" rgba="0 1 0 0.9"/>
+                    	</body>
+                    </body>
+            </body>
+        </body>
+
+
+    </worldbody>
+
+    <sensor>
+        <framequat name="stability_sensor" objtype="site"  objname="torso_sensor_zone" />
+    </sensor> -->
+
+    <actuator>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_1" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_2" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_3" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_4" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_5" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_6" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_7" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_8" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_9" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_10" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_11" gear="1"/>
+        <velocity ctrllimited="true" ctrlrange="-1 1" forcelimited="true"	forcerange="-1 1" joint="dynamixel_12" gear="1"/>
+    </actuator>
+
+</mujoco>
